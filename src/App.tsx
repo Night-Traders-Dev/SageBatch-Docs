@@ -172,6 +172,60 @@ sage --run-vm build/sagebatch.svm script.bat`}</code></pre>
       </div>
     )
   },
+  commands_ref: {
+    title: 'Commands Reference',
+    icon: <Book size={18} />,
+    content: (
+      <div className="markdown-body fade-in">
+        <h1 className="gradient-text">Commands Reference</h1>
+        <p className="lead-text">Detailed reference for internal MS-DOS Batch commands implemented natively in SageBatch.</p>
+        
+        <h2>Basic Output</h2>
+        <ul>
+          <li><strong><code>ECHO</code></strong>: Displays messages or turns command echoing on or off (<code>ECHO ON</code> / <code>ECHO OFF</code>).</li>
+          <li><strong><code>TITLE</code></strong>: Sets the window title for the terminal (emits ANSI escape sequences).</li>
+          <li><strong><code>COLOR</code></strong>: Sets the console foreground and background colors (e.g. <code>COLOR 0A</code> for green text).</li>
+        </ul>
+
+        <h2>Variables & State</h2>
+        <ul>
+          <li><strong><code>SET</code></strong>: Displays, sets, or removes environment variables. Supports math via <code>SET /A</code> and user input via <code>SET /P</code>.</li>
+          <li><strong><code>PROMPT</code></strong>: Changes the command prompt format (e.g. <code>PROMPT $P$G</code>).</li>
+          <li><strong><code>SHIFT</code></strong>: Shifts the position of replaceable parameters (e.g. <code>%1</code> becomes <code>%0</code>).</li>
+        </ul>
+
+        <h2>File System</h2>
+        <ul>
+          <li><strong><code>CD / CHDIR</code></strong>: Displays or changes the current directory.</li>
+          <li><strong><code>MD / MKDIR</code></strong>: Creates a directory.</li>
+          <li><strong><code>RD / RMDIR</code></strong>: Removes a directory.</li>
+          <li><strong><code>DIR</code></strong>: Displays a list of files and subdirectories in a directory.</li>
+          <li><strong><code>TYPE</code></strong>: Displays the contents of a text file.</li>
+          <li><strong><code>COPY</code></strong>: Copies one or more files to another location.</li>
+          <li><strong><code>MOVE</code></strong>: Moves one or more files from one directory to another.</li>
+          <li><strong><code>DEL / ERASE</code></strong>: Deletes one or more files.</li>
+          <li><strong><code>REN / RENAME</code></strong>: Renames a file or files.</li>
+        </ul>
+
+        <h2>Control Flow</h2>
+        <ul>
+          <li><strong><code>GOTO</code></strong>: Directs the interpreter to a labeled line in a batch program. Label lookups are <code>O(1)</code> time via parser pre-indexing.</li>
+          <li><strong><code>CALL</code></strong>: Calls one batch program from another, or jumps to a label as a subroutine.</li>
+          <li><strong><code>IF</code></strong>: Performs conditional processing. Supports <code>IF EXIST</code>, <code>IF NOT</code>, and <code>IF DEFINED</code>.</li>
+          <li><strong><code>FOR</code></strong>: Runs a specified command for each file in a set of files, or iterables.</li>
+          <li><strong><code>PAUSE</code></strong>: Suspends processing and prompts the user to press any key.</li>
+          <li><strong><code>EXIT</code></strong>: Quits the SageBatch interpreter.</li>
+        </ul>
+
+        <h2>Miscellaneous</h2>
+        <ul>
+          <li><strong><code>REM</code></strong>: Records comments in a batch file.</li>
+          <li><strong><code>CLS</code></strong>: Clears the terminal screen via ANSI escapes.</li>
+          <li><strong><code>VER</code></strong>: Displays the SageBatch MS-DOS clone version.</li>
+        </ul>
+      </div>
+    )
+  },
   language: {
     title: 'Language Syntax',
     icon: <Book size={18} />,
