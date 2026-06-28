@@ -319,6 +319,7 @@ FOR %%F IN (*.txt) DO TYPE %%F`}</code></pre>
         <pre><code>{`DIR > listing.txt
 DIR >> listing.txt
 TYPE file.txt | FIND "ERROR"`}</code></pre>
+      </div>
     )
   },
   benchmarks: {
