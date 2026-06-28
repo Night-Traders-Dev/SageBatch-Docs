@@ -173,6 +173,17 @@ sage --run-vm build/sagebatch.svm script.bat`}</code></pre>
             <p>Integrated as a direct C API, the shell communicates directly with kernel data structures, completely removing process overhead for built-in operations.</p>
           </div>
         </div>
+
+        <div className="card-highlight glow-on-hover" style={{ marginTop: '2rem' }}>
+          <h2>Building the OS</h2>
+          <p>SageDOS uses a unified <code>sagemake</code> build script to compile the kernel and the integrated SageBatch shell into a single native executable.</p>
+          <pre><code>{`# Clone the repository
+git clone https://github.com/Night-Traders-Dev/SageDOS.git
+cd SageDOS
+
+# Clean, compile to native ELF, and boot the OS
+./sagemake --clean --build --run`}</code></pre>
+        </div>
       </div>
     )
   },
