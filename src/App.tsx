@@ -129,6 +129,53 @@ sage --run-vm build/sagebatch.svm script.bat`}</code></pre>
       </div>
     )
   },
+  sagedos: {
+    title: 'SageDOS Integration',
+    icon: <Globe size={18} />,
+    content: (
+      <div className="markdown-body fade-in">
+        <h1 className="gradient-text">SageDOS Integration</h1>
+        <p className="lead-text">SageBatch is the beating heart of SageDOS, providing the core interactive <code>COMMAND.COM</code> shell experience.</p>
+        
+        <div className="card-highlight glow-on-hover">
+          <h2>The Shell Environment</h2>
+          <p>By compiling SageBatch directly into the SageDOS kernel, the operating system achieves near-instant boot times and high-performance script execution.</p>
+          
+          <div className="grid-list" style={{ marginTop: '2rem' }}>
+            <div className="grid-item">
+              <CheckCircle className="text-primary" size={24} />
+              <div>
+                <h3>Boot Scripts</h3>
+                <p>Native parsing and execution of <code>AUTOEXEC.BAT</code> equivalent system initialization scripts during startup.</p>
+              </div>
+            </div>
+            <div className="grid-item">
+              <CheckCircle className="text-secondary" size={24} />
+              <div>
+                <h3>System Environment</h3>
+                <p>Global variable scoping and path management for launching external commands and system utilities.</p>
+              </div>
+            </div>
+            <div className="grid-item">
+              <CheckCircle className="text-accent" size={24} />
+              <div>
+                <h3>Drive Emulation</h3>
+                <p>Establishing the classic <code>C:\</code> root namespace directly over the custom filesystem.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="info-box">
+          <Zap className="info-icon" size={24} />
+          <div>
+            <h3>Zero Overhead</h3>
+            <p>Integrated as a direct C API, the shell communicates directly with kernel data structures, completely removing process overhead for built-in operations.</p>
+          </div>
+        </div>
+      </div>
+    )
+  },
   components: {
     title: 'Components Guide',
     icon: <Layers size={18} />,
@@ -392,6 +439,13 @@ function App() {
               </div>
               <h3>SageVM Ready</h3>
               <p>Seamlessly compile to SGVM bytecode and run batch scripts on bare-metal kernels, bootloaders, and embedded systems.</p>
+            </div>
+            <div className="feature-card glass-card">
+              <div className="feature-icon-wrapper bg-primary-dim">
+                <Globe className="text-primary" size={28} />
+              </div>
+              <h3>SageDOS Core</h3>
+              <p>Serves as the foundational COMMAND.COM shell for SageDOS, managing the environment, boot scripts, and system tools natively.</p>
             </div>
           </section>
         </main>
