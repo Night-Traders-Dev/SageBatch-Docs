@@ -717,3 +717,57 @@ body {
   color: var(--text-main);
 }
 
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 3rem;
+  }
+  
+  .glass-header {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+  }
+  
+  .nav-links {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .hero-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .btn {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .docs-layout {
+    flex-direction: column;
+    height: auto;
+    overflow: auto;
+  }
+  
+  .docs-body {
+    flex-direction: column;
+    overflow: auto;
+  }
+  
+  .sidebar {
+    width: 100%;
+    padding: 1rem;
+    border-right: none;
+    border-bottom: 1px solid var(--glass-border);
+  }
+  
+  .content-area {
+    padding: 1rem;
+  }
+  
+  .glass-content {
+    padding: 1.5rem;
+  }
+}
+

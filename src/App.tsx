@@ -377,6 +377,42 @@ TYPE file.txt | FIND "ERROR"`}</code></pre>
               <span className="chart-value">3.40s</span>
             </div>
           </div>
+        <div className="card-highlight glow-on-hover">
+          <h2>Math Benchmark (Factorial 100)</h2>
+          <p>Recursive multiplication using <code>SET /A</code> to calculate a large factorial.</p>
+          <div className="chart-bar-container">
+            <div className="chart-label">SageBatch AOT</div>
+            <div className="chart-bar-wrapper">
+              <div className="chart-bar primary-bar" style={{ width: '15%' }}></div>
+              <span className="chart-value">0.002s</span>
+            </div>
+          </div>
+          <div className="chart-bar-container">
+            <div className="chart-label">SageBatch Interpreter (SageVM)</div>
+            <div className="chart-bar-wrapper">
+              <div className="chart-bar secondary-bar" style={{ width: '90%' }}></div>
+              <span className="chart-value">0.019s</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="card-highlight glow-on-hover">
+          <h2>Nested Loops (50x50)</h2>
+          <p>Double nested <code>FOR</code>-like iteration using <code>GOTO</code> and arithmetic.</p>
+          <div className="chart-bar-container">
+            <div className="chart-label">SageBatch AOT</div>
+            <div className="chart-bar-wrapper">
+              <div className="chart-bar primary-bar" style={{ width: '35%' }}></div>
+              <span className="chart-value">0.043s</span>
+            </div>
+          </div>
+          <div className="chart-bar-container">
+            <div className="chart-label">SageBatch Interpreter (SageVM)</div>
+            <div className="chart-bar-wrapper">
+              <div className="chart-bar secondary-bar" style={{ width: '90%' }}></div>
+              <span className="chart-value">0.114s</span>
+            </div>
+          </div>
         </div>
 
         <div className="info-box">
@@ -406,6 +442,9 @@ function App() {
           </div>
           <div className="nav-links">
             <span className="nav-link" onClick={() => setActiveSection('getting_started')}>Documentation</span>
+            <a href="https://github.com/Night-Traders-Dev/SageDOS" className="nav-link github-btn" target="_blank" rel="noreferrer">
+              <Globe size={16} /> SageDOS
+            </a>
             <a href="https://github.com/Night-Traders-Dev/SageBatch" className="nav-link github-btn" target="_blank" rel="noreferrer">
               <Globe size={16} /> GitHub
             </a>
@@ -476,6 +515,7 @@ function App() {
         </div>
         <div className="nav-links">
           <span className="nav-link active">Docs</span>
+          <a href="https://github.com/Night-Traders-Dev/SageDOS" className="nav-link" target="_blank" rel="noreferrer">SageDOS</a>
           <a href="https://github.com/Night-Traders-Dev/SageBatch" className="nav-link" target="_blank" rel="noreferrer">GitHub</a>
         </div>
       </header>
