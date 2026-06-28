@@ -135,7 +135,7 @@ sage --run-vm build/sagebatch.svm script.bat`}</code></pre>
     content: (
       <div className="markdown-body fade-in">
         <h1 className="gradient-text">SageDOS Integration</h1>
-        <p className="lead-text">SageBatch is the beating heart of SageDOS, providing the core interactive <code>COMMAND.COM</code> shell experience.</p>
+        <p className="lead-text">SageBatch is the beating heart of <a href="https://github.com/Night-Traders-Dev/SageDOS" target="_blank" rel="noreferrer" style={{color: 'var(--primary)', textDecoration: 'none'}}>SageDOS</a>, providing the core interactive <code>COMMAND.COM</code> shell experience.</p>
         
         <div className="card-highlight glow-on-hover">
           <h2>The Shell Environment</h2>
