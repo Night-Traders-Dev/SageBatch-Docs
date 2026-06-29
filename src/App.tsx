@@ -72,29 +72,57 @@ cd SageBatch
         <h3>Garbage Collector Safety</h3>
         <p>Because SageLang uses a precise tracing garbage collector (or ARC depending on compiler flags), developers must be careful about memory roots. A previous version of SageBatch suffered from `SIGSEGV` crashes and heap corruption due to inline dictionary literals (e.g. <code>&#123;"type": "IfStatement"&#125;</code>). These literals were unrooted across fast C-level allocations in the AOT backend. By explicitly rooting AST nodes in local variables, SageBatch achieved 100% stability.</p>
 
-        <h2>Phase Pipeline</h2>
-        <p>The interpreter follows a traditional phased compiler design implemented through highly modular `.sage` files:</p>
+          <h2>Phase Pipeline</h2>
+        <p>The interpreter follows a traditional phased compiler design implemented through highly modular `.sage` files. All 7 phases are complete:</p>
         
         <div className="timeline">
           <div className="timeline-item">
             <div className="timeline-icon">1</div>
             <div className="timeline-content">
-              <h3>Lexer <code>(lexer.sage)</code></h3>
+              <h3>Lexer <code>(lexer.sage)</code> <span className="text-accent" style={{fontSize: '0.8rem'}}>DONE</span></h3>
               <p>Tokenizes the raw <code>.bat</code> file into tokens (<code>WORD</code>, <code>VARIABLE</code>, <code>STRING</code>, <code>REDIRECT</code>). Identifies structures like <code>%VAR%</code> vs delayed expansion <code>!VAR!</code>.</p>
             </div>
           </div>
           <div className="timeline-item">
             <div className="timeline-icon">2</div>
             <div className="timeline-content">
-              <h3>Parser <code>(parser.sage)</code></h3>
+              <h3>Parser <code>(parser.sage)</code> <span className="text-accent" style={{fontSize: '0.8rem'}}>DONE</span></h3>
               <p>Constructs an Abstract Syntax Tree (AST) handling batch specifics like nested loops, complex conditionals, and block nodes <code>()</code>. Built using a Recursive Descent parser pattern.</p>
             </div>
           </div>
           <div className="timeline-item">
             <div className="timeline-icon">3</div>
             <div className="timeline-content">
-              <h3>Interpreter <code>(interpreter.sage)</code></h3>
-              <p>A recursive tree-walking executor that evaluates AST nodes via the <code>Environment</code> and <code>VarStore</code>.</p>
+              <h3>Interpreter <code>(interpreter.sage)</code> <span className="text-accent" style={{fontSize: '0.8rem'}}>DONE</span></h3>
+              <p>A recursive tree-walking executor that evaluates AST nodes via the <code>Environment</code> and <code>VarStore</code>. Implements GOTO/CALL jumps, SET /A arithmetic, SET /P prompt input.</p>
+            </div>
+          </div>
+          <div className="timeline-item">
+            <div className="timeline-icon">4</div>
+            <div className="timeline-content">
+              <h3>Environment <code>(environment.sage)</code> <span className="text-accent" style={{fontSize: '0.8rem'}}>DONE</span></h3>
+              <p>DOS environment block: PATH, TEMP, PROMPT, COMSPEC, ERRORLEVEL, CWD management. SETLOCAL/ENDLOCAL scope snapshots with nesting.</p>
+            </div>
+          </div>
+          <div className="timeline-item">
+            <div className="timeline-icon">5</div>
+            <div className="timeline-content">
+              <h3>Commands <code>(commands.sage)</code> <span className="text-accent" style={{fontSize: '0.8rem'}}>DONE</span></h3>
+              <p>35+ internal DOS commands: ECHO, SET, CD, MD, RD, DIR, TYPE, COPY, MOVE, DEL, REN, IF, FOR, GOTO, CALL, and more.</p>
+            </div>
+          </div>
+          <div className="timeline-item">
+            <div className="timeline-icon">6</div>
+            <div className="timeline-content">
+              <h3>Redirection <code>(context.sage)</code> <span className="text-accent" style={{fontSize: '0.8rem'}}>DONE</span></h3>
+              <p>Output redirection via <code>&gt;</code> (truncate) and <code>&gt;&gt;</code> (append). File-backed stdout routing through CommandContext.</p>
+            </div>
+          </div>
+          <div className="timeline-item">
+            <div className="timeline-icon">7</div>
+            <div className="timeline-content">
+              <h3>Pipes <span className="text-accent" style={{fontSize: '0.8rem'}}>DONE</span></h3>
+              <p>In-memory pipe implementation: captures left command stdout into a buffer, feeds as stdin to right command via <code>read_line()</code>.</p>
             </div>
           </div>
         </div>
@@ -135,54 +163,90 @@ sage --run-vm build/sagebatch.svm script.bat`}</code></pre>
     content: (
       <div className="markdown-body fade-in">
         <h1 className="gradient-text">SageDOS Integration</h1>
-        <p className="lead-text">SageBatch is the beating heart of <a href="https://github.com/Night-Traders-Dev/SageDOS" target="_blank" rel="noreferrer" style={{color: 'var(--primary)', textDecoration: 'none'}}>SageDOS</a>, providing the core interactive <code>COMMAND.COM</code> shell experience.</p>
+        <p className="lead-text">SageBatch is the <code>COMMAND.COM</code> shell for <a href="https://github.com/Night-Traders-Dev/SageDOS" target="_blank" rel="noreferrer" style={{color: 'var(--primary)', textDecoration: 'none'}}>SageDOS</a>, a clean-room MS-DOS 4.0 clone built entirely in SageLang.</p>
         
         <div className="card-highlight glow-on-hover">
-          <h2>The Shell Environment</h2>
-          <p>By compiling SageBatch directly into the SageDOS kernel, the operating system achieves near-instant boot times and high-performance script execution.</p>
+          <h2>Three-Layer MS-DOS Architecture</h2>
+          <p>SageDOS mirrors the classic MS-DOS design with all three layers implemented in pure SageLang:</p>
           
-          <div className="grid-list" style={{ marginTop: '2rem' }}>
-            <div className="grid-item">
-              <CheckCircle className="text-primary" size={24} />
-              <div>
-                <h3>Boot Scripts</h3>
-                <p>Native parsing and execution of <code>AUTOEXEC.BAT</code> equivalent system initialization scripts during startup.</p>
-              </div>
+          <div style={{ marginTop: '1.5rem', padding: '1rem', background: 'var(--bg-color)', borderRadius: '0.75rem', fontFamily: 'var(--mono-font)', fontSize: '0.9rem' }}>
+            <div style={{ padding: '0.5rem', borderLeft: '3px solid var(--primary)', marginBottom: '0.5rem' }}>
+              <strong style={{ color: 'var(--primary)' }}>COMMAND.COM</strong> → SageBatch (14 modules, 35+ commands)
             </div>
-            <div className="grid-item">
-              <CheckCircle className="text-secondary" size={24} />
-              <div>
-                <h3>System Environment</h3>
-                <p>Global variable scoping and path management for launching external commands and system utilities.</p>
-              </div>
+            <div style={{ padding: '0.5rem', borderLeft: '3px solid var(--secondary)', marginBottom: '0.5rem' }}>
+              <strong style={{ color: 'var(--secondary)' }}>MSDOS.SYS</strong> → Kernel + INT 21h dispatcher
             </div>
-            <div className="grid-item">
-              <CheckCircle className="text-accent" size={24} />
-              <div>
-                <h3>Drive Emulation</h3>
-                <p>Establishing the classic <code>C:\</code> root namespace directly over the custom filesystem.</p>
-              </div>
+            <div style={{ padding: '0.5rem', borderLeft: '3px solid var(--accent)' }}>
+              <strong style={{ color: 'var(--accent)' }}>IO.SYS</strong> → BIOS / Hardware Abstraction Layer
             </div>
           </div>
         </div>
 
-        <div className="info-box">
-          <Zap className="info-icon" size={24} />
-          <div>
-            <h3>Zero Overhead</h3>
-            <p>Integrated as a direct C API, the shell communicates directly with kernel data structures, completely removing process overhead for built-in operations.</p>
+        <div className="card-highlight glow-on-hover" style={{ marginTop: '2rem' }}>
+          <h2>Implementation Status — All Phases Complete</h2>
+          <div className="grid-list" style={{ marginTop: '1rem' }}>
+            <div className="grid-item">
+              <CheckCircle className="text-primary" size={24} />
+              <div><h3>Phase 1-2: Lexer & Parser</h3><p>Full tokenizer with delayed expansion tokens, recursive-descent parser with AST for all constructs.</p></div>
+            </div>
+            <div className="grid-item">
+              <CheckCircle className="text-secondary" size={24} />
+              <div><h3>Phase 3: Interpreter</h3><p>Tree-walking executor with GOTO/CALL, IF/ELSE, FOR loops, SET /A arithmetic, SET /P prompt.</p></div>
+            </div>
+            <div className="grid-item">
+              <CheckCircle className="text-accent" size={24} />
+              <div><h3>Phase 4: Environment</h3><p>Full DOS environment block: PATH, TEMP, PROMPT, COMSPEC, ERRORLEVEL, CWD, directory stack.</p></div>
+            </div>
+            <div className="grid-item">
+              <CheckCircle className="text-primary" size={24} />
+              <div><h3>Phase 5: Commands</h3><p>35+ internal DOS commands including file operations, system info, and variable management.</p></div>
+            </div>
+            <div className="grid-item">
+              <CheckCircle className="text-secondary" size={24} />
+              <div><h3>Phase 6: Redirection</h3><p><code>&gt;</code> (truncate) and <code>&gt;&gt;</code> (append) with file-backed stdout routing.</p></div>
+            </div>
+            <div className="grid-item">
+              <CheckCircle className="text-accent" size={24} />
+              <div><h3>Phase 7: Pipes</h3><p>In-memory pipe execution: left stdout captured to buffer, fed as stdin to right command.</p></div>
+            </div>
+          </div>
+        </div>
+
+        <div className="card-highlight glow-on-hover" style={{ marginTop: '2rem' }}>
+          <h2>Key Features</h2>
+          <div className="grid-list" style={{ marginTop: '1rem' }}>
+            <div className="grid-item">
+              <CheckCircle className="text-primary" size={24} />
+              <div><h3>SETLOCAL / ENDLOCAL</h3><p>Scoped variable snapshots with nesting support. Local changes discarded on ENDLOCAL.</p></div>
+            </div>
+            <div className="grid-item">
+              <CheckCircle className="text-secondary" size={24} />
+              <div><h3>Delayed Expansion</h3><p><code>!VAR!</code> syntax evaluated at execution time via <code>SETLOCAL ENABLEDELAYEDEXPANSION</code>.</p></div>
+            </div>
+            <div className="grid-item">
+              <CheckCircle className="text-accent" size={24} />
+              <div><h3>Full Test Suite</h3><p>22 test suites with 50+ assertions covering every command, flow control, and edge case.</p></div>
+            </div>
           </div>
         </div>
 
         <div className="card-highlight glow-on-hover" style={{ marginTop: '2rem' }}>
           <h2>Building the OS</h2>
-          <p>SageDOS uses a unified <code>sagemake</code> build script to compile the kernel and the integrated SageBatch shell into a single native executable.</p>
-          <pre><code>{`# Clone the repository
-git clone https://github.com/Night-Traders-Dev/SageDOS.git
+          <pre><code>{`# Clone with submodules
+git clone --recurse-submodules https://github.com/Night-Traders-Dev/SageDOS.git
 cd SageDOS
 
-# Clean, compile to native ELF, and boot the OS
-./sagemake --clean --build --run`}</code></pre>
+# Setup dependencies
+./sagesetup.sh
+
+# Build and run
+./sagemake --clean --build --run
+
+# Run tests (22 suites)
+./sagemake --test
+
+# Run a batch script
+./build/sagedos examples/test_all.bat`}</code></pre>
         </div>
       </div>
     )
@@ -204,27 +268,42 @@ cd SageDOS
           <div className="component-card">
             <Box className="component-icon text-secondary" size={32} />
             <h3><code>parser.sage</code></h3>
-            <p>Transforms tokens into AST nodes (<code>IfStatement</code>, <code>ForStatement</code>). Complex syntax like <code>FOR %%A IN (1) DO (...)</code> is parsed here.</p>
+            <p>Transforms tokens into AST nodes (<code>IfStatement</code>, <code>ForStatement</code>, <code>PipeNode</code>). Complex syntax like <code>FOR %%A IN (1) DO (...)</code> and <code>command1 | command2</code> is parsed here.</p>
           </div>
           <div className="component-card">
             <Box className="component-icon text-accent" size={32} />
             <h3><code>interpreter.sage</code></h3>
-            <p>Evaluates AST nodes. Implements Goto jump logic, variable expansion, sub-shell execution via <code>CALL</code>, and redirection. Highly optimized loops without inline string allocations to prevent GC crashes.</p>
+            <p>Evaluates AST nodes. Implements Goto jump logic, variable expansion, sub-shell execution via <code>CALL</code>, redirection, and pipe execution with in-memory capture.</p>
           </div>
           <div className="component-card">
             <Box className="component-icon text-primary" size={32} />
             <h3><code>registry.sage & commands.sage</code></h3>
-            <p>Dispatches commands. Identifies internal commands (<code>ECHO</code>, <code>SET</code>, <code>GOTO</code>, <code>IF</code>, <code>FOR</code>) and maps them to pure SageLang implementations avoiding system calls.</p>
+            <p>Dispatches commands. Identifies internal commands (<code>ECHO</code>, <code>SET</code>, <code>GOTO</code>, <code>IF</code>, <code>FOR</code>, <code>SETLOCAL</code>, <code>ENDLOCAL</code>) and maps them to pure SageLang implementations.</p>
           </div>
           <div className="component-card">
             <Box className="component-icon text-secondary" size={32} />
             <h3><code>environment.sage</code></h3>
-            <p>Holds the DOS environment block, pre-populating PATH, TEMP, COMSPEC, and handling variable expansions. Resolves delayed vs immediate expansion.</p>
+            <p>DOS environment block: PATH, TEMP, COMSPEC, ERRORLEVEL, CWD. Manages SETLOCAL/ENDLOCAL scope stack with nested snapshot/restore. Controls delayed expansion flag.</p>
           </div>
           <div className="component-card">
             <Box className="component-icon text-accent" size={32} />
             <h3><code>varstore.sage</code></h3>
-            <p>A stack of dicts that models DOS's flat environment but supports nested FOR loop variable scoping safely without memory leaks.</p>
+            <p>A stack of dicts that models DOS's flat environment but supports nested FOR loop variable scoping and delayed expansion (<code>!VAR!</code> syntax).</p>
+          </div>
+          <div className="component-card">
+            <Box className="component-icon text-primary" size={32} />
+            <h3><code>context.sage</code></h3>
+            <p>CommandContext — the execution context. Routes I/O (stdout redirect, pipe capture), expands variables (<code>%VAR%</code> / <code>!VAR!</code>), and manages argument shifting.</p>
+          </div>
+          <div className="component-card">
+            <Box className="component-icon text-secondary" size={32} />
+            <h3><code>filesystem.sage</code></h3>
+            <p>DOS-path filesystem wrapper. Normalizes backslashes, resolves relative paths with <code>..</code> support, and maps DOS paths to host filesystem for all file operations.</p>
+          </div>
+          <div className="component-card">
+            <Box className="component-icon text-accent" size={32} />
+            <h3><code>process.sage</code></h3>
+            <p>BatchProcess — binds Environment, VarStore, FileSystem, and call stack together. Creates CommandContext instances and manages subroutine depth.</p>
           </div>
         </div>
       </div>
@@ -249,7 +328,9 @@ cd SageDOS
 
         <h2>Variables & State</h2>
         <ul>
-          <li><strong><code>SET</code></strong>: Displays, sets, or removes environment variables. Supports math via <code>SET /A</code> and user input via <code>SET /P</code>.</li>
+          <li><strong><code>SET</code></strong>: Displays, sets, or removes environment variables. Supports math via <code>SET /A</code> (+, -, *, /) and user input via <code>SET /P</code>.</li>
+          <li><strong><code>SETLOCAL</code></strong>: Begins localization of environment changes. Snapshots all variables, CWD, and expansion state. Supports <code>SETLOCAL ENABLEDELAYEDEXPANSION</code> and <code>DISABLEDELAYEDEXPANSION</code>.</li>
+          <li><strong><code>ENDLOCAL</code></strong>: Ends environment localization, restoring variables and state saved by the most recent SETLOCAL. Supports nesting.</li>
           <li><strong><code>PROMPT</code></strong>: Changes the command prompt format (e.g. <code>PROMPT $P$G</code>).</li>
           <li><strong><code>SHIFT</code></strong>: Shifts the position of replaceable parameters (e.g. <code>%1</code> becomes <code>%0</code>).</li>
         </ul>
@@ -279,6 +360,13 @@ cd SageDOS
           <li><strong><code>EXIT</code></strong>: Quits the SageBatch interpreter.</li>
         </ul>
 
+        <h2>Redirection & Pipes</h2>
+        <ul>
+          <li><strong><code>&gt;</code></strong>: Redirects stdout to a file (truncate mode). <code>ECHO Hello &gt; file.txt</code></li>
+          <li><strong><code>&gt;&gt;</code></strong>: Redirects stdout to a file (append mode). <code>ECHO More &gt;&gt; file.txt</code></li>
+          <li><strong><code>|</code></strong>: Pipes stdout of left command to stdin of right command. Uses in-memory capture buffer. Works with <code>SET /P</code>: <code>ECHO hello | SET /P VAR=</code></li>
+        </ul>
+
         <h2>Miscellaneous</h2>
         <ul>
           <li><strong><code>REM</code></strong>: Records comments in a batch file.</li>
@@ -286,6 +374,9 @@ cd SageDOS
           <li><strong><code>VER</code></strong>: Displays the SageBatch MS-DOS clone version.</li>
           <li><strong><code>VOL</code></strong>: Displays the disk volume label and serial number.</li>
           <li><strong><code>VERIFY</code></strong>: Mock command for MS-DOS compatibility.</li>
+          <li><strong><code>PATH</code></strong>: Displays or sets the command search path.</li>
+          <li><strong><code>BREAK</code></strong>: Displays or sets extended Ctrl+C checking.</li>
+          <li><strong><code>CHCP</code></strong>: Displays or sets the active console code page.</li>
         </ul>
       </div>
     )
@@ -326,10 +417,18 @@ FOR %%A IN (apple banana cherry) DO ECHO %%A
 :: File globbing
 FOR %%F IN (*.txt) DO TYPE %%F`}</code></pre>
 
-        <h2>Redirection</h2>
-        <pre><code>{`DIR > listing.txt
+        <h2>Redirection & Pipes</h2>
+        <pre><code>{`:: Output redirection
+DIR > listing.txt
 DIR >> listing.txt
-TYPE file.txt | FIND "ERROR"`}</code></pre>
+
+:: Pipe — capture output and feed as stdin
+ECHO hello | SET /P VAR=
+ECHO %VAR%           :: prints "hello"
+
+:: Chain with SET /A
+SET /A X=10+5
+ECHO %X%             :: prints "15"`}</code></pre>
       </div>
     )
   },
